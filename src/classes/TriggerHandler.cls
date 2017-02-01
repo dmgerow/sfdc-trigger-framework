@@ -12,6 +12,8 @@ public virtual class TriggerHandler {
   @TestVisible
   private Boolean isTriggerExecuting;
 
+  private Boolean isTriggerActive;
+
   // static initialization
   static {
     loopCountMap = new Map<String, LoopCount>();
@@ -19,7 +21,9 @@ public virtual class TriggerHandler {
   }
   
   // constructor
-  public TriggerHandler() {
+  public TriggerHandler(SObjectType objectType) {
+    if(objectType == null) throw new TriggerHandlerException('Object API Name cannot be null');
+    this.isTriggerActive = checkTriggerActive(objectType.getDescribe().getName());
     this.setTriggerContext();
   }
 
@@ -147,7 +151,8 @@ public virtual class TriggerHandler {
     if(!this.isTriggerExecuting || this.context == null) {
       throw new TriggerHandlerException('Trigger handler called outside of Trigger execution');
     }
-    if(TriggerHandler.bypassedHandlers.contains(getHandlerName())) {
+    if(TriggerHandler.bypassedHandlers.contains(getHandlerName()) || !isTriggerActive) {
+      System.debug('Bypassing trigger');
       return false;
     }
     return true;
@@ -156,6 +161,16 @@ public virtual class TriggerHandler {
   @TestVisible
   private String getHandlerName() {
     return String.valueOf(this).substring(0,String.valueOf(this).indexOf(':'));
+  }
+
+  private Boolean checkTriggerActive(String objectApi) {
+    List<Trigger_Setting__mdt> triggerSettings = [SELECT isInactive__c, Object_API_Name__c 
+        FROM Trigger_Setting__mdt WHERE Object_API_Name__c =: objectApi];
+    if(!triggerSettings.isEmpty() && triggerSettings[0].isInactive__c) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   /***************************************
