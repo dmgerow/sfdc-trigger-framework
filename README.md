@@ -2,6 +2,11 @@
 
 [![npm version](https://badge.fury.io/js/sfdc-trigger-framework.svg)](https://badge.fury.io/js/sfdc-trigger-framework)
 
+<a href="https://githubsfdeploy.herokuapp.com?owner=dmgerow&repo=sfdc-trigger-framework">
+  <img alt="Deploy to Salesforce"
+       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
+</a>
+
 I know, I know...another trigger framework. Bear with me. ;)
 
 ## Overview
