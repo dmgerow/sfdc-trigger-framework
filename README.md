@@ -59,11 +59,11 @@ public class OpportunityTriggerHandler extends TriggerHandler {
 }
 ```
 
-To use the trigger handler, you only need to construct an instance of your trigger handler within the trigger handler itself and call the `run()` method. Here is an example of the Opportunity trigger.
+To use the trigger handler, you only need to construct an instance of your trigger handler within the trigger handler itself, pass the object type of the records being processed by the trigger, and call the `run()` method. Here is an example of the Opportunity trigger.
 
 ```java
 trigger OpportunityTrigger on Opportunity (before insert, before update) {
-  new OpportunityTriggerHandler().run();
+  new OpportunityTriggerHandler(Opportunity.getSObjectType()).run();
 }
 ```
 
@@ -114,6 +114,14 @@ public class OpportunityTriggerHandler extends TriggerHandler {
 
 }
 ```
+### Trigger Deactivation
+What if you would like to declaratively turn off your triggers in production without a deployment for a data migration? Follow these steps to deactivate your triggers:
+
+* Create a custom metadata record of type `Trigger_Setting__mdt`
+* Populate the Object API name field with the API Name of the Object for which you would like to bypass it triggers
+* Check the `isInactive__c ` checkbox to deativate the trigger 
+
+Note that if you do not make a custom metadata record that your trigger will not ever be bypassed via this logic.
 
 ## Overridable Methods
 
