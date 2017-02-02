@@ -19,10 +19,16 @@ But the most important part of this framework is that it's minimal and simple to
 
 ## Usage
 
-To create a trigger handler, you simply need to create a class that inherits from **TriggerHandler.cls**. Here is an example for creating an Opportunity trigger handler.
+To create a trigger handler, you simply need to create a class that inherits from **TriggerHandler.cls**. Here is an example for creating an Opportunity trigger handler, and add the constructor shown below.
 
 ```java
 public class OpportunityTriggerHandler extends TriggerHandler {
+  
+  public OpportunityTriggerHandler(SObjectType objectType) {
+    super(objectType);
+  }
+
+}
 ```
 
 In your trigger handler, to add logic to any of the trigger contexts, you only need to override them in your trigger handler. Here is how we would add logic to a `beforeUpdate` trigger.
@@ -48,7 +54,8 @@ public class OpportunityTriggerHandler extends TriggerHandler {
 
   private Map<Id, Opportunity> newOppMap;
 
-  public OpportunityTriggerHandler() {
+  public OpportunityTriggerHandler(SObjectType objectType) {
+    super(objectType);
     this.newOppMap = (Map<Id, Opportunity>) Trigger.newMap;
   }
   
@@ -76,7 +83,8 @@ To prevent recursion, you can set a max loop count for Trigger Handler. If this 
 ```java
 public class OpportunityTriggerHandler extends TriggerHandler {
 
-  public OpportunityTriggerHandler() {
+  public OpportunityTriggerHandler(SObjectType objectType) {
+    super(objectType);
     this.setMaxLoopCount(1);
   }
   
