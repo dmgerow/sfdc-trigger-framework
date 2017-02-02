@@ -35,6 +35,10 @@ In your trigger handler, to add logic to any of the trigger contexts, you only n
 
 ```java
 public class OpportunityTriggerHandler extends TriggerHandler {
+
+  public OpportunityTriggerHandler(SObjectType objectType) {
+    super(objectType);
+  }
   
   public override void beforeUpdate() {
     for(Opportunity o : (List<Opportunity>) Trigger.new) {
@@ -102,6 +106,10 @@ What if you want to tell other trigger handlers to halt execution? That's easy w
 
 ```java
 public class OpportunityTriggerHandler extends TriggerHandler {
+
+  public OpportunityTriggerHandler(SObjectType objectType) {
+    super(objectType);
+  }
   
   public override void afterUpdate() {
     List<Opportunity> opps = [SELECT Id, AccountId FROM Opportunity WHERE Id IN :Trigger.newMap.keySet()];
