@@ -192,7 +192,7 @@ private class TriggerHandler_Test {
   
   @isTest
   static void testVirtualMethods() {
-    TriggerHandler h = new TriggerHandler();
+    TriggerHandler h = new TriggerHandler(Account.getSObjectType());
     h.beforeInsert();
     h.beforeUpdate();
     h.beforeDelete();
@@ -244,6 +244,10 @@ private class TriggerHandler_Test {
 
   private class TestHandler extends TriggerHandler {
 
+    public testHandler() {
+      super(Account.getSObjectType());
+    }
+
     public override void beforeInsert() {
       TriggerHandler_Test.lastMethodCalled = 'beforeInsert';
     }
@@ -273,5 +277,5 @@ private class TriggerHandler_Test {
     }
 
   }
-	
+    
 }
