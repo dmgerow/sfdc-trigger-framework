@@ -1,12 +1,5 @@
 # SFDC trigger framework
 
-[![npm version](https://badge.fury.io/js/sfdc-trigger-framework.svg)](https://badge.fury.io/js/sfdc-trigger-framework)
-
-<a href="https://githubsfdeploy.herokuapp.com?owner=dmgerow&repo=sfdc-trigger-framework">
-  <img alt="Deploy to Salesforce"
-       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
-</a>
-
 ## Overview
 
 Triggers should (IMO) be logicless. Putting logic into your triggers creates un-testable, difficult-to-maintain code. It's widely accepted that a best-practice is to move trigger logic into a handler class.
@@ -16,6 +9,12 @@ This trigger framework bundles a single **TriggerHandler** base class that you c
 The base class also provides a secondary role as a supervisor for Trigger execution. It acts like a watchdog, monitoring trigger activity and providing an api for controlling certain aspects of execution and control flow.
 
 But the most important part of this framework is that it's minimal and simple to use. 
+
+**Deploy to SFDX Scratch Org:**
+[![Deploy](https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg)](https://deploy-to-sfdx.com)
+
+**Deploy to Salesforce Org:**
+[![Deploy](https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png)](https://githubsfdeploy.herokuapp.com/?owner=dmgerow&repo=sfdc-trigger-framework&ref=master)
 
 ## Usage
 
@@ -102,7 +101,7 @@ public class OpportunityTriggerHandler extends TriggerHandler {
 
 ### Bypass API
 
-What if you want to tell other trigger handlers to halt execution? That's easy with the bypass api. Example.
+What if you want to tell other trigger handlers to halt execution? That's easy with the bypass api:
 
 ```java
 public class OpportunityTriggerHandler extends TriggerHandler {
@@ -139,6 +138,24 @@ What if you would like to declaratively turn off your triggers in production wit
 
 Note that if you do not make a custom metadata record that your trigger will not ever be bypassed via this logic.
 
+If you need to check if a handler is bypassed, use the `isBypassed` method:
+
+```java
+if (TriggerHandler.isBypassed('AccountTriggerHandler')) {
+  // ... do something if the Account trigger handler is bypassed!
+}
+```
+
+If you want to clear all bypasses for the transaction, simple use the `clearAllBypasses` method, as in:
+
+```java
+// ... done with bypasses!
+
+TriggerHandler.clearAllBypasses();
+
+// ... now handlers won't be ignored!
+```
+
 ## Overridable Methods
 
 Here are all of the methods that you can override. All of the context possibilities are supported.
@@ -150,6 +167,3 @@ Here are all of the methods that you can override. All of the context possibilit
 * `afterUpdate()`
 * `afterDelete()`
 * `afterUndelete()`
-
-
-
