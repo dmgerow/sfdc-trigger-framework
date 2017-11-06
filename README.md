@@ -129,15 +129,6 @@ public class OpportunityTriggerHandler extends TriggerHandler {
 
 }
 ```
-### Trigger Deactivation
-What if you would like to declaratively turn off your triggers in production without a deployment for a data migration? Follow these steps to deactivate your triggers:
-
-* Create a custom metadata record of type `Trigger_Setting__mdt`
-* Populate the Object API name field with the API Name of the Object for which you would like to bypass it triggers
-* Check the `isInactive__c ` checkbox to deativate the trigger 
-
-Note that if you do not make a custom metadata record that your trigger will not ever be bypassed via this logic.
-
 If you need to check if a handler is bypassed, use the `isBypassed` method:
 
 ```java
@@ -155,6 +146,15 @@ TriggerHandler.clearAllBypasses();
 
 // ... now handlers won't be ignored!
 ```
+
+### Trigger Deactivation
+What if you would like to declaratively turn off your triggers in production without a deployment for a data migration? Follow these steps to deactivate your triggers:
+
+* Create a custom metadata record of type `Trigger_Setting__mdt`
+* Populate the Object API name field with the API Name of the Object for which you would like to bypass it triggers
+* Check the `isInactive__c ` checkbox to deativate the trigger 
+
+Note that if you do not make a custom metadata record that your trigger will not ever be bypassed via this logic.
 
 ## Overridable Methods
 
