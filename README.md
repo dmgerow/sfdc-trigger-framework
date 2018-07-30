@@ -13,9 +13,6 @@ But the most important part of this framework is that it's minimal and simple to
 **Deploy to SFDX Scratch Org:**
 [![Deploy](https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg)](https://deploy-to-sfdx.com)
 
-**Deploy to Salesforce Org:**
-[![Deploy](https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png)](https://githubsfdeploy.herokuapp.com/?owner=dmgerow&repo=sfdc-trigger-framework&ref=master)
-
 ## Usage
 
 To create a trigger handler, you simply need to create a class that inherits from **TriggerHandler.cls**. Here is an example for creating an Opportunity trigger handler, and add the constructor shown below.

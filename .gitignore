@@ -1,4 +1,3 @@
-*.sublime*
-config
-node_modules
-npm-debug.log
+.sfdx/
+.vscode/
+src/

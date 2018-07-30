@@ -1,0 +1,7 @@
+{
+    "orgName": "SFDC Trigger Framework",
+    "edition": "Developer",
+    "orgPreferences" : {
+        "enabled": ["S1DesktopEnabled"]
+    }
+}
