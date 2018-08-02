@@ -13,6 +13,7 @@ public virtual class TriggerHandler {
   private Boolean isTriggerExecuting;
 
   private Boolean isTriggerActive;
+  private SObjectType objectType;
 
   // static initialization
   static {
@@ -23,6 +24,7 @@ public virtual class TriggerHandler {
   // constructor
   public TriggerHandler(SObjectType objectType) {
     if(objectType == null) throw new TriggerHandlerException('Object API Name cannot be null');
+    this.objectType = objectType;
     this.isTriggerActive = checkTriggerActive(objectType.getDescribe().getName());
     this.setTriggerContext();
   }
@@ -37,24 +39,39 @@ public virtual class TriggerHandler {
     if(!validateRun()) return;
 
     addToLoopCount();
-
-    // dispatch to the correct handler method
-    if(this.context == TriggerContext.BEFORE_INSERT) {
-      this.beforeInsert();
-    } else if(this.context == TriggerContext.BEFORE_UPDATE) {
-      this.beforeUpdate();
-    } else if(this.context == TriggerContext.BEFORE_DELETE) {
-      this.beforeDelete();
-    } else if(this.context == TriggerContext.AFTER_INSERT) {
-      this.afterInsert();
-    } else if(this.context == TriggerContext.AFTER_UPDATE) {
-      this.afterUpdate();
-    } else if(this.context == TriggerContext.AFTER_DELETE) {
-      this.afterDelete();
-    } else if(this.context == TriggerContext.AFTER_UNDELETE) {
-      this.afterUndelete();
-    }
-
+    // try { uncomment this if you want to enable event-logging: https://github.com/dmgerow/sfdc-event-logging
+      // dispatch to the correct handler method
+      if(this.context == TriggerContext.BEFORE_INSERT) {
+        this.beforeInsert();
+      } else if(this.context == TriggerContext.BEFORE_UPDATE) {
+        this.beforeUpdate();
+      } else if(this.context == TriggerContext.BEFORE_DELETE) {
+        this.beforeDelete();
+      } else if(this.context == TriggerContext.AFTER_INSERT) {
+        this.afterInsert();
+      } else if(this.context == TriggerContext.AFTER_UPDATE) {
+        this.afterUpdate();
+      } else if(this.context == TriggerContext.AFTER_DELETE) {
+        this.afterDelete();
+      } else if(this.context == TriggerContext.AFTER_UNDELETE) {
+        this.afterUndelete();
+      }
+    // uncomment this code block if you want to enable event-logging: https://github.com/dmgerow/sfdc-event-logging
+    // } catch(Exception e) { 
+    //   String errorId = LogService.createErrorId();
+    //   Log.push('TriggerHandler.run()');
+    //   log.errorId(errorId);
+    //   Log.message(objectType.getDescribe().getName() + '.' + this.context);
+    //   Log.rootReason(objectType.getDescribe().getName() + ' : ' + this.context);
+    //   Log.rootException(e);
+    //   Log.pop();
+    //   Log.emit(); 
+    //   List<SObject> records = this.context == TriggerContext.BEFORE_DELETE 
+    //       || this.context == TriggerContext.AFTER_DELETE ? trigger.old : trigger.new;
+    //   for(SObject record : records) {
+    //     record.addError(errorId + ': ' + e.getMessage()); 
+    //   }
+    // }
   }
 
   public void setMaxLoopCount(Integer max) {
