@@ -10,8 +10,40 @@ The base class also provides a secondary role as a supervisor for Trigger execut
 
 But the most important part of this framework is that it's minimal and simple to use. 
 
+This framework can also be integrated with an event logging framework to enable automated event logging for all trigger events.
+
 **Deploy to SFDX Scratch Org:**
 [![Deploy](https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg)](https://deploy-to-sfdx.com)
+
+## Installation Instructions
+Make a temporary directory to convert your source
+```
+mkdir src
+```
+Convert project to metadata API format
+```
+sfdx force:source:convert -d src/ --packagename eventlogging
+```
+
+Authenticate to your org
+
+Sandbox
+```
+sfdx force:auth:web:login --setalias <org_alias> --instanceurl https://test.salesforce.com
+```
+Production
+```
+sfdx force:auth:web:login --setalias <org_alias> --instanceurl https://login.salesforce.com
+```
+Custom Domain
+```
+sfdx force:auth:web:login --setalias <org_alias> --instanceurl https://mydomain.my.salesforce.com
+```
+
+Deploy to Org
+```
+sfdx force:mdapi:deploy -d src/ -l RunSpecifiedTests -r LogTest,SessionControllerTest --wait 30 -u "org_alias"
+```
 
 ## Usage
 
@@ -75,6 +107,96 @@ trigger OpportunityTrigger on Opportunity (before insert, before update) {
 ```
 
 ## Cool Stuff
+
+### Integrate with Automated Event Logging
+
+To integrate with the event logging module, you must first install the event logging application. Instructions to do that can be found [here](https://github.com/dmgerow/sfdc-event-logging). 
+
+After this, uncomment the try/catch statement that contains the implementation of the event logging application:
+
+```java
+  public void run() {
+
+    if(!validateRun()) return;
+
+    addToLoopCount();
+    // try { uncomment this if you want to enable event-logging: https://github.com/dmgerow/sfdc-event-logging
+      // dispatch to the correct handler method
+      if(this.context == TriggerContext.BEFORE_INSERT) {
+        this.beforeInsert();
+      } else if(this.context == TriggerContext.BEFORE_UPDATE) {
+        this.beforeUpdate();
+      } else if(this.context == TriggerContext.BEFORE_DELETE) {
+        this.beforeDelete();
+      } else if(this.context == TriggerContext.AFTER_INSERT) {
+        this.afterInsert();
+      } else if(this.context == TriggerContext.AFTER_UPDATE) {
+        this.afterUpdate();
+      } else if(this.context == TriggerContext.AFTER_DELETE) {
+        this.afterDelete();
+      } else if(this.context == TriggerContext.AFTER_UNDELETE) {
+        this.afterUndelete();
+      }
+    // uncomment this code block if you want to enable event-logging: https://github.com/dmgerow/sfdc-event-logging
+    // } catch(Exception e) { 
+    //   String errorId = LogService.createErrorId();
+    //   Log.push('TriggerHandler.run()');
+    //   log.errorId(errorId);
+    //   Log.message(objectType.getDescribe().getName() + '.' + this.context);
+    //   Log.rootReason(objectType.getDescribe().getName() + ' : ' + this.context);
+    //   Log.rootException(e);
+    //   Log.pop();
+    //   Log.emit(); 
+    //   List<SObject> records = this.context == TriggerContext.BEFORE_DELETE 
+    //       || this.context == TriggerContext.AFTER_DELETE ? trigger.old : trigger.new;
+    //   for(SObject record : records) {
+    //     record.addError(errorId + ': ' + e.getMessage()); 
+    //   }
+    // }
+  }
+```
+Should be changed to:
+
+```java
+  public void run() {
+
+    if(!validateRun()) return;
+
+    addToLoopCount();
+    try {
+      // dispatch to the correct handler method
+      if(this.context == TriggerContext.BEFORE_INSERT) {
+        this.beforeInsert();
+      } else if(this.context == TriggerContext.BEFORE_UPDATE) {
+        this.beforeUpdate();
+      } else if(this.context == TriggerContext.BEFORE_DELETE) {
+        this.beforeDelete();
+      } else if(this.context == TriggerContext.AFTER_INSERT) {
+        this.afterInsert();
+      } else if(this.context == TriggerContext.AFTER_UPDATE) {
+        this.afterUpdate();
+      } else if(this.context == TriggerContext.AFTER_DELETE) {
+        this.afterDelete();
+      } else if(this.context == TriggerContext.AFTER_UNDELETE) {
+        this.afterUndelete();
+      }
+    } catch(Exception e) { 
+      String errorId = LogService.createErrorId();
+      Log.push('TriggerHandler.run()');
+      log.errorId(errorId);
+      Log.message(objectType.getDescribe().getName() + '.' + this.context);
+      Log.rootReason(objectType.getDescribe().getName() + ' : ' + this.context);
+      Log.rootException(e);
+      Log.pop();
+      Log.emit(); 
+      List<SObject> records = this.context == TriggerContext.BEFORE_DELETE 
+          || this.context == TriggerContext.AFTER_DELETE ? trigger.old : trigger.new;
+      for(SObject record : records) {
+        record.addError(errorId + ': ' + e.getMessage()); 
+      }
+    }
+  }
+```
 
 ### Max Loop Count
 
