@@ -22,7 +22,7 @@ mkdir src
 ```
 Convert project to metadata API format
 ```
-sfdx force:source:convert -d src/ --packagename eventlogging
+sfdx force:source:convert -d src/ --packagename triggerframework
 ```
 
 Authenticate to your org
